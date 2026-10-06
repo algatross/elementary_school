@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>🌈 二年级口算打卡</title>
+<title>🏫 二上学习小屋</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;500;600;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 <style>
   *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body { height:100%; }
   :root{
     --cream:#F5F0E6; --turquoise:#7ECDC0; --soft-pink:#F7C8D4; --butter:#FDE68A;
     --mint:#A8E6CF; --lavender:#D4A5E8; --peach:#FFCBA4; --sky:#A8D8F0; --coral:#F8635F;
@@ -31,12 +30,12 @@
   .deco { position:fixed; pointer-events:none; z-index:1; opacity:.95; }
   .deco svg { width:100%; height:100%; display:block; }
   .deco-1 { width:64px; top:18px; left:12px; transform:rotate(-14deg); }
-  .deco-2 { width:46px; top:120px; right:16px; transform:rotate(12deg); }
+  .deco-2 { width:46px; top:110px; right:16px; transform:rotate(12deg); }
   .deco-3 { width:58px; bottom:60px; left:8px; transform:rotate(8deg); }
-  .deco-4 { width:70px; bottom:110px; right:6px; transform:rotate(-8deg); }
-  .deco-5 { width:44px; top:44px; right:110px; transform:rotate(20deg); }
+  .deco-4 { width:44px; top:44px; right:110px; transform:rotate(20deg); }
+  @media (max-width:600px){ .deco{ display:none; } }
 
-  /* ---------- 通用卡片（贴纸卡） ---------- */
+  /* ---------- 通用卡片 ---------- */
   .card {
     background:var(--white); border:var(--bw) solid var(--ink);
     border-radius:var(--radius); box-shadow:var(--shadow);
@@ -57,621 +56,196 @@
     box-shadow:3px 3px 0 var(--ink);
   }
 
-  /* ---------- 打卡状态 ---------- */
-  .checkin { display:flex; align-items:center; justify-content:space-between; gap:8px; background:var(--mint); }
-  .checkin .fire { font-size:15px; font-weight:700; color:var(--ink); }
-  .checkin .today-flag {
-    background:var(--white); border:2px solid var(--ink); border-radius:50px;
-    padding:5px 14px; font-size:12px; font-weight:700; color:var(--ink);
-    box-shadow:3px 3px 0 var(--ink); white-space:nowrap;
+  /* ---------- 学科入口 ---------- */
+  .subjects { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .subject {
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    text-decoration:none; color:var(--ink);
+    border:var(--bw) solid var(--ink); border-radius:var(--radius-lg);
+    box-shadow:var(--shadow); padding:20px 10px 16px;
+    transition:transform .08s, box-shadow .08s;
   }
+  .subject:active { transform:translate(4px,4px); box-shadow:2px 2px 0 var(--ink); }
+  .subject .ico { font-size:40px; line-height:1; }
+  .subject .name { font-family:var(--font-display); font-size:18px; }
+  .subject .desc { font-size:11px; font-weight:600; color:var(--muted); }
+  .subject.math    { background:var(--mint); }
+  .subject.chinese { background:var(--soft-pink); }
+  .subject.english { background:var(--sky); }
+  .subject.more    { background:var(--butter); }
+  .subject.soon { opacity:.55; cursor:not-allowed; }
+  .subject.soon .tag {
+    font-size:10px; background:var(--white); border:2px solid var(--ink);
+    border-radius:50px; padding:2px 10px; font-weight:700; margin-top:2px;
+  }
+
+  /* ---------- 打卡横幅 ---------- */
+  .banner {
+    background:var(--peach); display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .banner .fire { font-size:15px; font-weight:700; }
+  .banner .tip { font-size:12px; font-weight:600; color:#4a6a5e; margin-top:4px; }
+  .badge {
+    flex-shrink:0; border:2px solid var(--ink); border-radius:50px;
+    padding:6px 14px; font-size:12px; font-weight:700; background:var(--white); color:var(--muted);
+    box-shadow:3px 3px 0 var(--ink);
+  }
+  .badge.full { background:var(--turquoise); color:#fff; }
+  .badge.part { background:var(--butter); color:var(--ink); }
 
   /* ---------- 打卡日历 ---------- */
-  .calendar { background:var(--white); }
   .cal-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-  .cal-head .section-title { margin:0; }
-  .cal-nav {
-    width:38px; height:38px; border:var(--bw) solid var(--ink); border-radius:12px;
-    background:var(--butter); font-size:16px; font-weight:800; color:var(--ink);
-    cursor:pointer; box-shadow:3px 3px 0 var(--ink); transition:.1s; user-select:none;
+  .cal-head .title { font-family:var(--font-display); font-size:17px; }
+  .cal-head button {
+    font-family:var(--font-display); font-size:15px; cursor:pointer;
+    width:38px; height:38px; border:2px solid var(--ink); border-radius:12px;
+    background:var(--butter); box-shadow:3px 3px 0 var(--ink);
+    transition:transform .08s, box-shadow .08s;
   }
-  .cal-nav:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
-  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; }
-  .cal-grid.weekdays { margin-bottom:6px; }
-  .cal-grid.weekdays span {
-    text-align:center; font-size:12px; font-weight:700; color:var(--muted); padding:2px 0;
+  .cal-head button:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; text-align:center; }
+  .cal-grid .dow { font-size:11px; font-weight:700; color:var(--muted); padding:4px 0; }
+  .cal-grid .day {
+    aspect-ratio:1; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; border:2px solid var(--ink); border-radius:50%;
+    background:var(--white);
   }
-  .day {
-    aspect-ratio:1; border-radius:50%; display:flex; align-items:center; justify-content:center;
-    font-size:14px; font-weight:700; font-family:var(--font-display);
-    border:2px solid transparent; background:transparent; color:var(--ink);
-    cursor:default; user-select:none;
+  .cal-grid .day.blank { border:none; background:transparent; }
+  .cal-grid .day.full { background:var(--turquoise); color:#fff; box-shadow:2px 2px 0 var(--ink); }
+  .cal-grid .day.part { background:var(--butter); box-shadow:2px 2px 0 var(--ink); }
+  .cal-grid .day.future { opacity:.35; }
+  .cal-grid .day.today { outline:2px dashed var(--coral); outline-offset:2px; }
+  .legend { display:flex; gap:14px; justify-content:center; margin-top:14px; font-size:11px; font-weight:600; color:var(--muted); flex-wrap:wrap; }
+  .legend i {
+    display:inline-block; width:12px; height:12px; border-radius:50%;
+    border:2px solid var(--ink); margin-right:4px; vertical-align:-1px;
   }
-  .day.full  { background:var(--turquoise); color:#fff; border-color:var(--ink); box-shadow:2px 2px 0 var(--ink); }
-  .day.part  { background:var(--butter); color:var(--ink); border-color:var(--ink); box-shadow:2px 2px 0 var(--ink); }
-  .day.today { border-color:var(--coral); border-style:dashed; }
-  .day.future{ color:#c8c2b4; }
-  .legend {
-    display:flex; gap:16px; justify-content:center; margin-top:14px; flex-wrap:wrap;
-    font-size:12px; font-weight:700; color:var(--muted);
-  }
-  .legend .dot { width:13px; height:13px; border-radius:50%; display:inline-block; margin-right:5px; vertical-align:-2px; border:2px solid var(--ink); }
-  .legend .dot.full { background:var(--turquoise); }
-  .legend .dot.part { background:var(--butter); }
-  .legend .dot.none { background:transparent; }
-
-  /* ---------- 题型选择 ---------- */
-  .section-title {
-    font-family:var(--font-display); font-weight:400; font-size:18px;
-    margin:2px 0 12px; color:var(--ink);
-  }
-  .modes { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .mode-btn {
-    border:var(--bw) solid var(--ink); border-radius:18px;
-    background:#fff; box-shadow:var(--shadow-sm);
-    padding:14px 8px 12px; text-align:center; cursor:pointer; transition:.12s;
-    user-select:none;
-  }
-  .mode-btn:hover { transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--ink); }
-  .mode-btn:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--ink); }
-  .mode-btn .ico { font-size:32px; }
-  .mode-btn .name { font-family:var(--font-display); font-weight:400; font-size:16px; margin-top:4px; color:var(--ink); }
-  .mode-btn .desc { font-size:11px; font-weight:600; color:var(--muted); margin-top:2px; }
-  .mode-btn[data-mode="mix"]     { background:var(--butter); }
-  .mode-btn[data-mode="add20"]   { background:var(--soft-pink); }
-  .mode-btn[data-mode="add100"]  { background:var(--sky); }
-  .mode-btn[data-mode="mul"]     { background:var(--mint); }
-  .mode-btn[data-mode="mulmix"]  { background:var(--lavender); }
-  .mode-btn.active {
-    transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--ink);
-    outline:3px solid var(--coral); outline-offset:2px;
-  }
-
-  .counts { display:flex; gap:14px; }
-  .count-btn {
-    flex:1; border:var(--bw) solid var(--ink); border-radius:14px;
-    background:#fff; box-shadow:var(--shadow-sm);
-    padding:10px 0; text-align:center; font-size:16px; font-weight:700; color:var(--ink);
-    cursor:pointer; transition:.12s; user-select:none;
-  }
-  .count-btn:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--ink); }
-  .count-btn.active { background:var(--peach); transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--ink); }
-
-  .big-btn {
-    display:block; width:100%; border:var(--bw) solid var(--ink); border-radius:22px;
-    background:var(--coral); color:#fff; font-family:var(--font-display); font-weight:400;
-    font-size:23px; letter-spacing:4px; padding:16px 0; cursor:pointer;
-    box-shadow:var(--shadow); transition:.12s; text-shadow:2px 2px 0 rgba(0,0,0,.18);
-  }
-  .big-btn:hover { transform:translate(-1px,-1px); box-shadow:7px 7px 0 var(--ink); }
-  .big-btn:active { transform:translate(4px,4px); box-shadow:1px 1px 0 var(--ink); }
-  .goal-tip {
-    margin-top:14px; background:var(--white); border:2px dashed var(--ink);
-    border-radius:16px; padding:10px 14px;
-    font-size:12px; font-weight:600; color:var(--muted); text-align:center; line-height:1.8;
-  }
-
-  /* ---------- 答题页 ---------- */
-  .hud { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:14px; }
-  .hud .pill {
-    background:var(--white); border:2px solid var(--ink); border-radius:50px;
-    padding:7px 15px; font-size:14px; font-weight:700; color:var(--ink);
-    box-shadow:3px 3px 0 var(--ink); white-space:nowrap;
-  }
-  #timer.warn { background:var(--peach); color:#8a3b00; }
-  .progress-bar {
-    height:16px; border-radius:50px; background:var(--white);
-    border:2px solid var(--ink); box-shadow:3px 3px 0 var(--ink);
-    overflow:hidden; margin-bottom:20px;
-  }
-  .progress-bar i { display:block; height:100%; width:0%;
-    background:repeating-linear-gradient(-45deg,var(--turquoise) 0 10px,var(--mint) 10px 20px);
-    border-right:2px solid var(--ink); transition:width .3s; }
-
-  .qcard {
-    background:var(--white); border:var(--bw) solid var(--ink);
-    border-radius:var(--radius-lg); padding:34px 16px 28px;
-    text-align:center; box-shadow:8px 8px 0 var(--ink); margin-bottom:22px;
-    position:relative; overflow:hidden;
-  }
-  .qcard::before { /* 卡片左上角小雏菊水印 */
-    content:''; position:absolute; top:-18px; right:-18px; width:76px; height:76px;
-    background:radial-gradient(circle at center, var(--butter) 26%, transparent 28%),
-      radial-gradient(circle at 50% 8%, #fff 30%, transparent 32%);
-    border-radius:50%; opacity:.9;
-  }
-  .qcard.shake { animation:shake .4s; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-10px)}
-    40%{transform:translateX(10px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(6px)} }
-  .qcard .qtext {
-    font-family:var(--font-display); font-weight:400;
-    font-size:54px; color:var(--ink); letter-spacing:.02em;
-  }
-  .qcard .answer {
-    margin-top:12px; font-family:var(--font-display); font-weight:400;
-    font-size:46px; color:var(--coral); min-height:58px;
-    border-bottom:4px dashed var(--soft-pink); display:inline-block; padding:0 34px; min-width:170px;
-  }
-  .qcard.good { animation:pop .35s; }
-  @keyframes pop { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
-
-  /* 键盘（贴纸按键） */
-  .keypad { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
-  .key {
-    border:var(--bw) solid var(--ink); border-radius:18px; background:var(--white);
-    font-family:var(--font-display); font-weight:400;
-    font-size:30px; color:var(--ink); padding:15px 0; cursor:pointer;
-    box-shadow:var(--shadow-sm); transition:.1s; user-select:none;
-  }
-  .key:active { transform:translate(3px,3px); box-shadow:1px 1px 0 var(--ink); }
-  .key.ok { background:var(--turquoise); color:#fff; font-size:21px; text-shadow:2px 2px 0 rgba(0,0,0,.18); }
-  .key.del { background:var(--soft-pink); color:var(--ink); }
-
-  /* 反馈气泡（贴纸牌） */
-  #toast {
-    position:fixed; left:50%; top:13%; transform:translateX(-50%) scale(.7) rotate(-3deg);
-    background:var(--white); color:var(--ink); font-family:var(--font-display); font-weight:400;
-    font-size:19px; padding:14px 30px; border:var(--bw) solid var(--ink);
-    border-radius:50px; box-shadow:var(--shadow-sm);
-    opacity:0; pointer-events:none; transition:.25s; z-index:99; white-space:nowrap;
-  }
-  #toast.show { opacity:1; transform:translateX(-50%) scale(1) rotate(-2deg); }
-  #toast.good { background:var(--mint); }
-  #toast.bad  { background:var(--soft-pink); }
-  #toast.ans  { background:var(--butter); }
-
-  .exit-link { text-align:center; margin-top:18px; }
-  .exit-link a { color:var(--muted); font-size:14px; font-weight:600; text-decoration:underline; cursor:pointer; }
-
-  /* ---------- 结果页 ---------- */
-  .result-head { text-align:center; padding:12px 0 6px; background:var(--white); }
-  .stars { font-size:56px; letter-spacing:10px; min-height:76px; }
-  .stars .s { display:inline-block; opacity:.16; transform:scale(.6); transition:.4s; filter:grayscale(1); }
-  .stars .s.on { opacity:1; transform:scale(1); filter:none; animation:starPop .5s; }
-  @keyframes starPop { 0%{transform:scale(0) rotate(-40deg)} 70%{transform:scale(1.35) rotate(10deg)} 100%{transform:scale(1)} }
-  .praise { font-family:var(--font-display); font-weight:400; font-size:21px; margin-top:10px; color:var(--ink); }
-  .medal {
-    display:inline-block; margin-top:12px; font-size:14px; font-weight:700; color:var(--ink);
-    background:var(--butter); border:2px solid var(--ink); border-radius:50px;
-    padding:7px 20px; box-shadow:3px 3px 0 var(--ink);
-  }
-  .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:18px; }
-  .stat { border:2px solid var(--ink); border-radius:16px; padding:12px 4px; text-align:center; box-shadow:3px 3px 0 var(--ink); }
-  .stat:nth-child(1){ background:var(--sky); } .stat:nth-child(2){ background:var(--soft-pink); } .stat:nth-child(3){ background:var(--mint); }
-  .stat b { display:block; font-family:var(--font-display); font-weight:400; font-size:22px; color:var(--ink); }
-  .stat span { font-size:12px; font-weight:700; color:var(--muted); }
-  .wrong-list { margin-top:0; background:var(--white); }
-  .wrong-list h3 { font-family:var(--font-display); font-weight:400; font-size:16px; color:var(--ink); margin-bottom:10px; }
-  .wrong-item {
-    display:flex; justify-content:space-between; background:var(--soft-pink);
-    border:2px solid var(--ink); border-radius:12px; padding:9px 14px; margin-bottom:8px;
-    font-size:18px; font-weight:700; font-family:var(--font-display); box-shadow:3px 3px 0 var(--ink);
-  }
-  .wrong-item em { font-style:normal; color:var(--coral); }
-  .btn-row { display:flex; gap:14px; margin-top:4px; }
-  .btn-row .big-btn { letter-spacing:1px; font-size:18px; padding:14px 0; }
-  .btn-row .alt { background:var(--turquoise); }
-
-  /* 彩带 */
-  .confetti { position:fixed; top:-40px; font-size:24px; z-index:98; pointer-events:none; animation:fall linear forwards; }
-  @keyframes fall { to { transform:translateY(110vh) rotate(720deg); opacity:.6; } }
-
-  .hidden { display:none !important; }
-  @media (max-width:420px){ .deco{ display:none; } }
+  .legend .l-full { background:var(--turquoise); }
+  .legend .l-part { background:var(--butter); }
+  .legend .l-today { background:var(--white); outline:2px dashed var(--coral); outline-offset:1px; }
 </style>
 </head>
 <body>
-
   <!-- 手绘贴纸装饰 -->
-  <div class="deco deco-1"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <g stroke="#2D2D2D" stroke-width="2.5" stroke-linejoin="round">
-      <ellipse cx="50" cy="22" rx="10" ry="16" fill="#FFFFFF"/><ellipse cx="50" cy="78" rx="10" ry="16" fill="#FFFFFF"/>
-      <ellipse cx="22" cy="50" rx="16" ry="10" fill="#FFFFFF"/><ellipse cx="78" cy="50" rx="16" ry="10" fill="#FFFFFF"/>
-      <ellipse cx="30" cy="30" rx="10" ry="14" fill="#FFFFFF" transform="rotate(-45 30 30)"/><ellipse cx="70" cy="70" rx="10" ry="14" fill="#FFFFFF" transform="rotate(-45 70 70)"/>
-      <ellipse cx="70" cy="30" rx="10" ry="14" fill="#FFFFFF" transform="rotate(45 70 30)"/><ellipse cx="30" cy="70" rx="10" ry="14" fill="#FFFFFF" transform="rotate(45 30 70)"/>
-      <circle cx="50" cy="50" r="14" fill="#FDE68A"/>
-    </g></svg></div>
-  <div class="deco deco-2"><svg viewBox="0 0 100 98.6" xmlns="http://www.w3.org/2000/svg"><path fill="#FBB0C7" stroke="#2D2D2D" stroke-width="3" stroke-miterlimit="10" d="m57.7 7.8 8.3 19.1c.5 1.3 1.5 2.1 2.8 2.3l21.5 2.2c6.4.8 9.4 8.3 5.3 13.7l-16.2 15.2c-1 .9-1.5 2.5-1.2 4.2l4.3 21.1c.9 6.2-4.9 11.6-12 8.7l-18.1-10.2c-1.4-.8-3.3-.8-4.8 0l-17.8 10.2c-6 2.9-13.2-.6-12.7-8l4.5-21.3c.3-1.7-.1-3.5-1.3-4.5l-15.2-13.5c-4.5-4.3-3.6-13.6 4.2-15.6l21.5-2.2c1.3-.1 2.3-.9 2.9-2.3l8.7-19.1c2.7-6 11.5-7.7 15.3 0z"/></svg></div>
-  <div class="deco deco-3"><svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
-    <path d="M30 55 a14 14 0 0 1 2-27 a18 18 0 0 1 34-6 a14 14 0 0 1 22 11 a12 12 0 0 1 -4 22 z" fill="#FFFFFF" stroke="#2D2D2D" stroke-width="2.5" stroke-linejoin="round"/></svg></div>
-  <div class="deco deco-4"><svg viewBox="0 0 110 80" xmlns="http://www.w3.org/2000/svg">
-    <g fill="none" stroke="#2D2D2D" stroke-width="2.5" stroke-linecap="round">
-      <path d="M10 70 A45 45 0 0 1 100 70" stroke="#F7C8D4" stroke-width="11"/>
-      <path d="M20 70 A35 35 0 0 1 90 70" stroke="#FDE68A" stroke-width="11"/>
-      <path d="M30 70 A25 25 0 0 1 80 70" stroke="#A8E6CF" stroke-width="11"/>
-      <path d="M4 76 H106" stroke="#2D2D2D" stroke-width="3"/>
-    </g></svg></div>
-  <div class="deco deco-5"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <g stroke="#2D2D2D" stroke-width="2.5" stroke-linecap="round">
-      <circle cx="50" cy="50" r="20" fill="#FFCBA4"/>
-      <path d="M50 14v10M50 76v10M14 50h10M76 50h10M25 25l7 7M68 68l7 7M75 25l-7 7M32 68l-7 7" fill="none"/>
-    </g></svg></div>
+  <div class="deco deco-1"><svg viewBox="0 0 64 64"><g stroke="#2D2D2D" stroke-width="2.5"><circle cx="32" cy="32" r="9" fill="#F8635F"/><g id="p"><ellipse cx="32" cy="14" rx="6" ry="10" fill="#FDE68A"/></g><use href="#p" transform="rotate(60 32 32)"/><use href="#p" transform="rotate(120 32 32)"/><use href="#p" transform="rotate(180 32 32)"/><use href="#p" transform="rotate(240 32 32)"/><use href="#p" transform="rotate(300 32 32)"/></g></svg></div>
+  <div class="deco deco-2"><svg viewBox="0 0 46 46"><path d="M23 4l5 12 13 1-10 8 3 13-11-7-11 7 3-13-10-8 13-1z" fill="#FDE68A" stroke="#2D2D2D" stroke-width="2.5" stroke-linejoin="round"/></svg></div>
+  <div class="deco deco-3"><svg viewBox="0 0 58 40"><path d="M14 32a10 10 0 1 1 2-19 12 12 0 0 1 23 2 9 9 0 0 1 1 17z" fill="#A8D8F0" stroke="#2D2D2D" stroke-width="2.5" stroke-linejoin="round"/></svg></div>
+  <div class="deco deco-4"><svg viewBox="0 0 44 44"><g stroke="#2D2D2D" stroke-width="2.5"><circle cx="22" cy="22" r="7" fill="#A8E6CF"/><g id="pp"><ellipse cx="22" cy="9" rx="4.5" ry="8" fill="#F7C8D4"/></g><use href="#pp" transform="rotate(72 22 22)"/><use href="#pp" transform="rotate(144 22 22)"/><use href="#pp" transform="rotate(216 22 22)"/><use href="#pp" transform="rotate(288 22 22)"/></g></svg></div>
 
-<div id="app">
-
-  <!-- ===== 首页 ===== -->
-  <div id="home">
+  <div id="app">
     <div class="top">
-      <h1>🌈 二年级口算打卡</h1>
-      <div class="sub">2026学年上学期 · 国庆计算任务好帮手</div>
+      <h1>🏫 二上学习小屋</h1>
+      <div class="sub">二年级上册 · 练一练 学一学 ✏️</div>
     </div>
 
-    <div class="card checkin">
+    <!-- 学科入口 -->
+    <div class="subjects">
+      <a class="subject math" href="math/koucalc.html">
+        <span class="ico">🧮</span>
+        <span class="name">数学</span>
+        <span class="desc">口算打卡 · 自动出题批改</span>
+      </a>
+      <div class="subject chinese soon">
+        <span class="ico">📖</span>
+        <span class="name">语文</span>
+        <span class="desc">课本解读 · 生字卡</span>
+        <span class="tag">敬请期待</span>
+      </div>
+      <div class="subject english soon">
+        <span class="ico">🔤</span>
+        <span class="name">英语</span>
+        <span class="desc">单词闪卡 · 跟读</span>
+        <span class="tag">敬请期待</span>
+      </div>
+      <div class="subject more soon">
+        <span class="ico">🎨</span>
+        <span class="name">更多</span>
+        <span class="desc">古诗 · 科普 · 益智</span>
+        <span class="tag">敬请期待</span>
+      </div>
+    </div>
+
+    <!-- 打卡横幅 -->
+    <div class="card banner">
       <div>
         <div class="fire" id="streakText">🔥 连续打卡 0 天</div>
-        <div style="font-size:12px;font-weight:600;color:#4a6a5e;margin-top:4px" id="todayText">今天还没有打卡哦～</div>
+        <div class="tip" id="todayText">今天还没有打卡哦～</div>
       </div>
-      <div class="today-flag" id="todayFlag">今日未打卡</div>
+      <div class="badge" id="todayFlag">今日未打卡</div>
     </div>
 
+    <!-- 打卡日历 -->
     <div class="card">
-      <div class="section-title">1️⃣ 选一选：今天练什么？</div>
-      <div class="modes" id="modes">
-        <div class="mode-btn active" data-mode="mix"><div class="ico">🎒</div><div class="name">综合挑战</div><div class="desc">四种题型混着来</div></div>
-        <div class="mode-btn" data-mode="add20"><div class="ico">🍎</div><div class="name">20以内加减</div><div class="desc">进位加 · 退位减</div></div>
-        <div class="mode-btn" data-mode="add100"><div class="ico">🚀</div><div class="name">100以内加减</div><div class="desc">两位数进位加 · 借位减</div></div>
-        <div class="mode-btn" data-mode="mul"><div class="ico">✖️</div><div class="name">表内乘法</div><div class="desc">1~6 的乘法口诀</div></div>
-        <div class="mode-btn" data-mode="mulmix" style="grid-column:1/-1"><div class="ico">🧩</div><div class="name">乘加乘减</div><div class="desc">如 3×5＋8、4×6－7</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="section-title">2️⃣ 选一选：做几道题？</div>
-      <div class="counts" id="counts">
-        <div class="count-btn" data-n="10">10题</div>
-        <div class="count-btn active" data-n="30">30题</div>
-        <div class="count-btn" data-n="50">50题</div>
-      </div>
-    </div>
-
-    <button class="big-btn" id="startBtn">开始打卡 ✏️</button>
-    <div class="goal-tip">📌 任务单达标线：口算每分钟约 8 题，10 分钟内完成、只错 1~2 题<br>做完全对用时又短，就能拿到 ⭐⭐⭐ 哦！</div>
-
-    <div class="card calendar">
       <div class="cal-head">
-        <button class="cal-nav" id="prevMonth" title="上个月">◀</button>
-        <div class="section-title" id="calTitle">2026年10月</div>
-        <button class="cal-nav" id="nextMonth" title="下个月">▶</button>
-      </div>
-      <div class="cal-grid weekdays">
-        <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+        <button id="prevMonth">◀</button>
+        <div class="title" id="calTitle">—</div>
+        <button id="nextMonth">▶</button>
       </div>
       <div class="cal-grid" id="calGrid"></div>
       <div class="legend">
-        <span><i class="dot full"></i>全对打卡</span>
-        <span><i class="dot part"></i>打卡（有错题）</span>
-        <span><i class="dot none"></i>未打卡</span>
+        <span><i class="l-full"></i>全对打卡</span>
+        <span><i class="l-part"></i>打卡有错</span>
+        <span><i class="l-today"></i>今天</span>
       </div>
     </div>
   </div>
-
-  <!-- ===== 答题页 ===== -->
-  <div id="quiz" class="hidden">
-    <div class="hud">
-      <span class="pill">第 <span id="qIdx">1</span>/<span id="qTotal">30</span> 题</span>
-      <span class="pill" id="timer">⏱ 00:00</span>
-      <span class="pill">✅ <span id="rightCnt">0</span></span>
-    </div>
-    <div class="progress-bar"><i id="pBar"></i></div>
-
-    <div class="qcard" id="qCard">
-      <div class="qtext" id="qText">3 + 5 =</div>
-      <div class="answer" id="ansText">?</div>
-    </div>
-
-    <div class="keypad">
-      <button class="key" data-k="1">1</button>
-      <button class="key" data-k="2">2</button>
-      <button class="key" data-k="3">3</button>
-      <button class="key" data-k="4">4</button>
-      <button class="key" data-k="5">5</button>
-      <button class="key" data-k="6">6</button>
-      <button class="key" data-k="7">7</button>
-      <button class="key" data-k="8">8</button>
-      <button class="key" data-k="9">9</button>
-      <button class="key del" data-k="del">⌫</button>
-      <button class="key" data-k="0">0</button>
-      <button class="key ok" data-k="ok">确定 ✓</button>
-    </div>
-    <div class="exit-link"><a id="exitBtn">↩ 不练了，回主页</a></div>
-  </div>
-
-  <!-- ===== 结果页 ===== -->
-  <div id="result" class="hidden">
-    <div class="card result-head">
-      <div class="stars" id="stars"><span class="s">⭐</span><span class="s">⭐</span><span class="s">⭐</span></div>
-      <div class="praise" id="praiseText">太棒啦！</div>
-      <div class="medal hidden" id="medal">🏅 达标：达到任务单要求！</div>
-      <div class="stats">
-        <div class="stat"><b id="rTime">00:00</b><span>用时</span></div>
-        <div class="stat"><b id="rAcc">100%</b><span>正确率</span></div>
-        <div class="stat"><b id="rSpeed">8题/分</b><span>速度</span></div>
-      </div>
-    </div>
-
-    <div class="card wrong-list hidden" id="wrongCard">
-      <h3>📝 错题回顾（再算一遍吧）</h3>
-      <div id="wrongItems"></div>
-    </div>
-
-    <div class="btn-row">
-      <button class="big-btn alt" id="againBtn">🔄 再来一轮</button>
-      <button class="big-btn" id="homeBtn">🏠 回主页</button>
-    </div>
-  </div>
-
-</div>
-<div id="toast"></div>
 
 <script>
-/* ================= 题目生成 ================= */
-const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
-const pick = arr => arr[Math.floor(Math.random()*arr.length)];
-
-function genAdd20(){ // 20以内加减，偏重进位加/退位减
-  if(Math.random()<0.65){
-    if(Math.random()<0.5){ const a=rnd(4,9),b=rnd(4,9); return {t:`${a} + ${b}`,a:a+b}; }
-    const m=rnd(11,18), s=rnd(Math.max(3,m-10+1),9); // 保证退位且差不太小
-    return {t:`${m} − ${s}`,a:m-s};
-  }
-  if(Math.random()<0.5){ const a=rnd(2,8),b=rnd(1,9); return {t:`${a} + ${b}`,a:a+b}; }
-  const m=rnd(5,15),s=rnd(1,m-1); return {t:`${m} − ${s}`,a:m-s};
-}
-function genAdd100(){ // 100以内：两位数为主、进位/借位为主、结果不超过两位数
-  const r = Math.random();
-  if(r<0.55){ // 两位数 + 两位数（个位进位，和≤99）
-    const ua=rnd(1,9);                       // 第一个加数个位 1~9
-    const a=rnd(1,7)*10+ua;                  // 两位数(11~79)，保证留足进位空间
-    const ub=rnd(10-ua,9);                   // 个位相加必进位
-    const maxTens=((99-a-ub)/10)|0;          // 和不超过99
-    const b=rnd(1,Math.max(1,maxTens))*10+ub;
-    return {t:`${a} + ${b}`,a:a+b};
-  } else if(r<0.9){ // 两位数 − 两位数（个位借位，差≥10）
-    const mu=rnd(0,8);                       // 被减数个位 0~8
-    const m=rnd(3,9)*10+mu;                  // 30~99
-    const su=rnd(mu+1,9);                    // 个位必借位
-    const maxTens=((m-10-su)/10)|0;          // 差不小于10
-    const s=rnd(1,Math.max(1,maxTens))*10+su;
-    return {t:`${m} − ${s}`,a:m-s};
-  } else { // 少量：两位数 ± 一位数（进位/退位）
-    if(Math.random()<0.5){ const t=rnd(21,89), u=t%10; if(u===0||u===9){ const a=rnd(21,89),b=rnd(3,9); return {t:`${a} + ${b}`,a:a+b}; } const b=rnd(10-u,9); return {t:`${t} + ${b}`,a:t+b}; }
-    const t=rnd(21,89), u=t%10; if(u===9){ const a=rnd(21,89),b=rnd(1,8); return {t:`${a} − ${b}`,a:a-b}; } const b=rnd(u+1,9); return {t:`${t} − ${b}`,a:t-b};
-  }
-}
-function genMul(){ const a=rnd(1,6),b=rnd(1,6); return {t:`${a} × ${b}`,a:a*b}; }
-function genMulMix(){ // 乘加乘减
-  const a=rnd(2,6), b=rnd(2,6), p=a*b;
-  if(Math.random()<0.55){ const k=Math.random()<0.6?rnd(11,39):rnd(3,9); return {t:`${a} × ${b} + ${k}`,a:p+k}; }
-  const k=rnd(3,Math.min(9,p-1)); return {t:`${a} × ${b} − ${k}`,a:p-k};
-}
-function genQuestion(mode){
-  if(mode==='add20') return genAdd20();
-  if(mode==='add100') return genAdd100();
-  if(mode==='mul') return genMul();
-  if(mode==='mulmix') return genMulMix();
-  const r=Math.random();
-  return r<0.28?genAdd20(): r<0.56?genAdd100(): r<0.8?genMul():genMulMix();
-}
-function buildQuiz(mode,n){
-  const qs=[], seen=new Set();
-  while(qs.length<n){
-    const q=genQuestion(mode);
-    const key=q.t;
-    if(seen.has(key)) continue;
-    if(q.a<0||q.a>999) continue;
-    seen.add(key); qs.push(q);
-  }
-  return qs;
-}
-
-/* ================= 状态 ================= */
-const $=id=>document.getElementById(id);
-let state={mode:'mix',n:30,quiz:[],idx:0,right:0,wrong:[],input:'',startT:0,timerId:null,firstTry:true,cur:null};
-
-/* ================= 打卡记录 ================= */
+/* ================= 打卡数据（与口算页共用同一 localStorage） ================= */
 const KEY='koucalc_checkin_v1';
-function loadRec(){ try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};} }
-function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function saveRecord(acc,timeSec,n){
-  const rec=loadRec(), t=todayStr();
-  const item={acc,time:timeSec,n,ts:Date.now()};
-  if(!rec[t]||acc>rec[t].acc) rec[t]=item;
-  localStorage.setItem(KEY,JSON.stringify(rec));
-  renderCheckin();
-}
+function loadRec(){ try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {}; } }
+function fmtKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 function calcStreak(rec){
   let s=0; const d=new Date();
   for(let i=0;i<365;i++){
-    const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const k=fmtKey(d);
     if(rec[k]) s++; else if(i>0) break;
     d.setDate(d.getDate()-1);
   }
   return s;
 }
-function renderCheckin(){
-  const rec=loadRec(), t=todayStr(), streak=calcStreak(rec);
-  $('streakText').textContent=`🔥 连续打卡 ${streak} 天`;
-  $('todayText').textContent = rec[t] ? `今天已打卡 ✅ 正确率 ${rec[t].acc}%` : '今天还没有打卡哦～';
-  const flag=$('todayFlag');
-  if(rec[t]){
-    flag.textContent = rec[t].acc===100 ? '🌟 今日全对！' : `今日 ${rec[t].acc}%`;
-    flag.style.background = rec[t].acc===100 ? 'var(--turquoise)' : 'var(--butter)';
-    flag.style.color = rec[t].acc===100 ? '#fff' : 'var(--ink)';
-  } else {
-    flag.textContent='今日未打卡'; flag.style.background='var(--white)'; flag.style.color='var(--muted)';
-  }
-  renderCalendar();
-}
 
-/* ================= 打卡日历 ================= */
+/* ================= 日历 ================= */
 const now0=new Date();
-let calY=now0.getFullYear(), calM=now0.getMonth(); // 日历当前显示的月份
-function fmtKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+let calY=now0.getFullYear(), calM=now0.getMonth();
 function renderCalendar(){
-  $('calTitle').textContent=calY+'年'+(calM+1)+'月';
+  document.getElementById('calTitle').textContent=calY+'年'+(calM+1)+'月';
   const firstDow=(new Date(calY,calM,1).getDay()+6)%7;      // 周一开头
   const dim=new Date(calY,calM+1,0).getDate();
   const todayKey=fmtKey(new Date());
   const rec=loadRec();
-  let html='';
+  const dows=['一','二','三','四','五','六','日'];
+  let html=dows.map(w=>`<span class="dow">${w}</span>`).join('');
   for(let i=0;i<firstDow;i++) html+='<span class="day blank"></span>';
   for(let d=1;d<=dim;d++){
     const key=fmtKey(new Date(calY,calM,d));
     const r=rec[key];
     let cls='day';
-    if(r&&r.acc===100) cls+=' full';       // 全对打卡
-    else if(r) cls+=' part';               // 打卡但有错
+    if(r&&r.acc===100) cls+=' full';
+    else if(r) cls+=' part';
     if(key>todayKey) cls+=' future';
     if(key===todayKey) cls+=' today';
     html+=`<span class="${cls}">${d}</span>`;
   }
-  $('calGrid').innerHTML=html;
+  document.getElementById('calGrid').innerHTML=html;
 }
-$('prevMonth').onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); };
-$('nextMonth').onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); };
+document.getElementById('prevMonth').onclick=()=>{ calM--; if(calM<0){calM=11;calY--;} renderCalendar(); };
+document.getElementById('nextMonth').onclick=()=>{ calM++; if(calM>11){calM=0;calY++;} renderCalendar(); };
 
-/* ================= 首页交互 ================= */
-document.querySelectorAll('#modes .mode-btn').forEach(b=>{
-  b.onclick=()=>{ document.querySelectorAll('#modes .mode-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); state.mode=b.dataset.mode; };
-});
-document.querySelectorAll('#counts .count-btn').forEach(b=>{
-  b.onclick=()=>{ document.querySelectorAll('#counts .count-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); state.n=+b.dataset.n; };
-});
-$('startBtn').onclick=()=>startQuiz(state.mode,state.n);
-$('againBtn').onclick=()=>startQuiz(state.mode,state.n);
-$('homeBtn').onclick=()=>showPage('home');
-$('exitBtn').onclick=()=>{ if(confirm('确定要退出本次练习吗？这次就不算打卡啦～')){ stopTimer(); showPage('home'); } };
-
-function showPage(p){
-  ['home','quiz','result'].forEach(x=>$(x).classList.toggle('hidden',x!==p));
-  if(p==='home') renderCheckin();
-}
-
-/* ================= 计时 ================= */
-function fmt(sec){ return String(Math.floor(sec/60)).padStart(2,'0')+':'+String(sec%60).padStart(2,'0'); }
-function stopTimer(){ if(state.timerId){ clearInterval(state.timerId); state.timerId=null; } }
-
-/* ================= 出题流程 ================= */
-function startQuiz(mode,n){
-  state.quiz=buildQuiz(mode,n); state.idx=0; state.right=0; state.wrong=[];
-  $('qTotal').textContent=n; showPage('quiz');
-  state.startT=Date.now();
-  stopTimer();
-  state.timerId=setInterval(()=>{
-    const s=Math.floor((Date.now()-state.startT)/1000);
-    const el=$('timer'); el.textContent='⏱ '+fmt(s);
-    el.classList.toggle('warn', s > n/8*60); // 超过达标时间变橙
-  },500);
-  nextQuestion();
-}
-function nextQuestion(){
-  if(state.idx>=state.quiz.length){ return finishQuiz(); }
-  state.cur=state.quiz[state.idx];
-  state.input=''; state.firstTry=true;
-  $('qIdx').textContent=state.idx+1;
-  $('qText').textContent=state.cur.t.replace(/[＋－]/g,m=>m==='＋'?'+':'−').replace(/\s/g,' ');
-  $('ansText').textContent='?';
-  $('pBar').style.width=(state.idx/state.quiz.length*100)+'%';
-}
-function pressKey(k){
-  if(k==='del'){ state.input=state.input.slice(0,-1); }
-  else if(k==='ok'){ return submit(); }
-  else if(state.input.length<3){ state.input+=k; }
-  $('ansText').textContent=state.input===''?'?':state.input;
-}
-function submit(){
-  const card=$('qCard');
-  if(state.input===''){ card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake'); return; }
-  const val=+state.input;
-  if(val===state.cur.a){
-    state.right++;
-    $('rightCnt').textContent=state.right;
-    card.classList.remove('good'); void card.offsetWidth; card.classList.add('good');
-    const streakNow=state.right;
-    let msg=pick(['答对啦！🎉','真棒！👍','你真聪明！🧠','太厉害了！💪','继续保持！🌟','哇，又对了！✨']);
-    if(streakNow>0 && streakNow%5===0) msg=`连续 ${streakNow} 题全对，太厉害啦！🏆`;
-    toast(msg,'good',700);
-    state.idx++;
-    setTimeout(nextQuestion,600);
-  } else if(state.firstTry){
-    state.firstTry=false;
-    card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake');
-    toast('再想一想哦～ 💭','bad',900);
-    state.input=''; $('ansText').textContent='?';
+/* ================= 今日状态 ================= */
+function renderBanner(){
+  const rec=loadRec(), t=fmtKey(new Date()), streak=calcStreak(rec);
+  document.getElementById('streakText').textContent=`🔥 连续打卡 ${streak} 天`;
+  document.getElementById('todayText').textContent = rec[t] ? `今天已打卡 ✅ 正确率 ${rec[t].acc}%` : '今天还没有打卡哦～去数学练一练吧！';
+  const flag=document.getElementById('todayFlag');
+  if(rec[t]){
+    flag.textContent = rec[t].acc===100 ? '🌟 今日全对！' : `今日 ${rec[t].acc}%`;
+    flag.className = 'badge ' + (rec[t].acc===100 ? 'full' : 'part');
   } else {
-    state.wrong.push(state.cur);
-    toast(`正确答案是 ${state.cur.a} 哦`,`ans`,1400);
-    state.idx++;
-    setTimeout(nextQuestion,1400);
+    flag.textContent='今日未打卡'; flag.className='badge';
   }
 }
-document.querySelectorAll('.key').forEach(b=>{ b.onclick=()=>pressKey(b.dataset.k); });
-document.addEventListener('keydown',e=>{
-  if($('quiz').classList.contains('hidden')) return;
-  if(/^[0-9]$/.test(e.key)) pressKey(e.key);
-  else if(e.key==='Backspace') pressKey('del');
-  else if(e.key==='Enter') pressKey('ok');
-});
-
-/* ================= 结果页 ================= */
-function finishQuiz(){
-  stopTimer();
-  const sec=Math.floor((Date.now()-state.startT)/1000);
-  const total=state.quiz.length, acc=Math.round(state.right/total*100);
-  const speed=(total/(sec/60)).toFixed(1);
-  // 星级：正确率为主
-  let stars = acc>=98?3 : acc>=85?2 : 1;
-  const starEls=$('stars').querySelectorAll('.s');
-  starEls.forEach(s=>s.classList.remove('on'));
-  for(let i=0;i<stars;i++){ setTimeout(()=>starEls[i].classList.add('on'), 300+i*350); }
-  // 表扬语
-  let praise;
-  if(acc===100&&stars===3) praise=pick(['满分小天才！你就是计算小达人！🥇','全部答对，太不可思议啦！🎆']);
-  else if(stars===3) praise='非常优秀！离满分只差一点点啦！🌈';
-  else if(stars===2) praise='做得不错！再细心一点就更棒啦！😄';
-  else praise='没关系，多练几次你一定行！加油！💪';
-  $('praiseText').textContent=praise;
-  $('rTime').textContent=fmt(sec);
-  $('rAcc').textContent=acc+'%';
-  $('rSpeed').textContent=speed+'题/分';
-  // 达标判定：正确率≥96%（50题错2题≈96%）且速度达标（每分钟≥8题）
-  const meet = acc>=96 && sec<=total/8*60;
-  $('medal').classList.toggle('hidden',!meet);
-  // 错题
-  const wc=$('wrongCard'), wi=$('wrongItems');
-  if(state.wrong.length){ wc.classList.remove('hidden'); wi.innerHTML='';
-    state.wrong.forEach(q=>{
-      const d=document.createElement('div'); d.className='wrong-item';
-      d.innerHTML=`<span>${q.t.replace('×','×')} = ${q.a}</span>`;
-      wi.appendChild(d);
-    });
-  } else wc.classList.add('hidden');
-  saveRecord(acc,sec,total);
-  showPage('result');
-  if(stars===3) confetti();
-}
-
-/* ================= 反馈 & 彩带 ================= */
-let toastTimer=null;
-function toast(msg,cls,ms){
-  const t=$('toast'); t.textContent=msg; t.className='show '+cls;
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>t.className='',ms||900);
-}
-function confetti(){
-  const emos=['🎉','⭐','✨','🎈','🌟','🎊','💛','💙'];
-  for(let i=0;i<28;i++){
-    const s=document.createElement('div');
-    s.className='confetti'; s.textContent=pick(emos);
-    s.style.left=Math.random()*100+'vw';
-    s.style.animationDuration=(2+Math.random()*2)+'s';
-    s.style.animationDelay=(Math.random()*0.8)+'s';
-    document.body.appendChild(s);
-    setTimeout(()=>s.remove(),5000);
-  }
-}
-
-renderCheckin();
+renderBanner(); renderCalendar();
 </script>
 </body>
 </html>
