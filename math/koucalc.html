@@ -128,6 +128,7 @@
   .mode-btn[data-mode="add100"]  { background:var(--sky); }
   .mode-btn[data-mode="mul"]     { background:var(--mint); }
   .mode-btn[data-mode="mulmix"]  { background:var(--lavender); }
+  .mode-btn[data-mode="balance"] { background:var(--peach); }
   .mode-btn.active {
     transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--ink);
     outline:3px solid var(--coral); outline-offset:2px;
@@ -314,11 +315,12 @@
     <div class="card">
       <div class="section-title">1️⃣ 选一选：今天练什么？</div>
       <div class="modes" id="modes">
-        <div class="mode-btn active" data-mode="mix"><div class="ico">🎒</div><div class="name">综合挑战</div><div class="desc">四种题型混着来</div></div>
+        <div class="mode-btn active" data-mode="mix"><div class="ico">🎒</div><div class="name">综合挑战</div><div class="desc">五种题型混着来</div></div>
         <div class="mode-btn" data-mode="add20"><div class="ico">🍎</div><div class="name">20以内加减</div><div class="desc">进位加 · 退位减</div></div>
         <div class="mode-btn" data-mode="add100"><div class="ico">🚀</div><div class="name">100以内加减</div><div class="desc">两位数进位加 · 借位减</div></div>
         <div class="mode-btn" data-mode="mul"><div class="ico">✖️</div><div class="name">表内乘法</div><div class="desc">1~6 的乘法口诀</div></div>
-        <div class="mode-btn" data-mode="mulmix" style="grid-column:1/-1"><div class="ico">🧩</div><div class="name">乘加乘减</div><div class="desc">如 3×5＋8、4×6－7</div></div>
+        <div class="mode-btn" data-mode="mulmix"><div class="ico">🧩</div><div class="name">乘加乘减</div><div class="desc">如 3×5＋8、4×6－7</div></div>
+        <div class="mode-btn" data-mode="balance"><div class="ico">⚖️</div><div class="name">等式填空</div><div class="desc">如 ( )+63=70+18</div></div>
       </div>
     </div>
 
@@ -451,13 +453,32 @@ function genMulMix(){ // 乘加乘减
   if(Math.random()<0.55){ const k=Math.random()<0.6?rnd(11,39):rnd(3,9); return {t:`${a} × ${b} + ${k}`,a:p+k}; }
   const k=rnd(3,Math.min(9,p-1)); return {t:`${a} × ${b} − ${k}`,a:p-k};
 }
+function genBalance(){ // 等式填空：两边算式平衡，括号里填数（结果≤99）
+  for(;;){
+    const V=rnd(20,88);                        // 平衡值
+    const blank=[                              // 含括号的一侧
+      ()=>{ const b=rnd(2,Math.min(88,V-1)); return {t:`( ) + ${b}`,a:V-b}; },
+      ()=>{ const b=rnd(2,98-V);             return {t:`( ) − ${b}`,a:V+b}; },
+      ()=>{ const a=rnd(V+1,99);             return {t:`${a} − ( )`,a:a-V}; },
+    ];
+    const known=[                              // 全已知的一侧
+      ()=>{ const c=rnd(1,V-1);   return `${c} + ${V-c}`; },
+      ()=>{ const c=rnd(V+1,99);  return `${c} − ${c-V}`; },
+    ];
+    const B=blank[Math.floor(Math.random()*blank.length)]();
+    const K=known[Math.floor(Math.random()*known.length)]();
+    const t=Math.random()<0.5?`${B.t} = ${K}`:`${K} = ${B.t}`;
+    if(B.a>=1&&B.a<=99) return {t,a:B.a};
+  }
+}
 function genQuestion(mode){
   if(mode==='add20') return genAdd20();
   if(mode==='add100') return genAdd100();
   if(mode==='mul') return genMul();
   if(mode==='mulmix') return genMulMix();
+  if(mode==='balance') return genBalance();
   const r=Math.random();
-  return r<0.28?genAdd20(): r<0.56?genAdd100(): r<0.8?genMul():genMulMix();
+  return r<0.22?genAdd20(): r<0.44?genAdd100(): r<0.64?genMul(): r<0.82?genMulMix():genBalance();
 }
 function buildQuiz(mode,n){
   const qs=[], seen=new Set();
@@ -649,7 +670,7 @@ function finishQuiz(){
   if(state.wrong.length){ wc.classList.remove('hidden'); wi.innerHTML='';
     state.wrong.forEach(q=>{
       const d=document.createElement('div'); d.className='wrong-item';
-      d.innerHTML=`<span>${q.t.replace('×','×')} = ${q.a}</span>`;
+      d.innerHTML = q.t.includes('=') ? `<span>${q.t} → 括号里填 ${q.a}</span>` : `<span>${q.t} = ${q.a}</span>`;
       wi.appendChild(d);
     });
   } else wc.classList.add('hidden');
